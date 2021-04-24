@@ -6,7 +6,7 @@
 <meta property="og:description" content="集成是微服务相关技术中最重要的一个。做的好，可以保持微服务的自治性，做的不好会带来灾难。你总提及的那个词，它的含义与你想表达的意思并不一样。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-24T07:50:07.831Z">
-<meta property="article:modified_time" content="2021-04-24T07:57:44.525Z">
+<meta property="article:modified_time" content="2021-04-24T08:10:11.863Z">
 <meta property="article:author" content="guwenxiang">
 <meta property="article:tag" content="微服务">
 <meta property="article:tag" content="架构">
@@ -42,24 +42,19 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 5.4.0"></he
       
         <h2 id="1-1避免破坏性修改"   >
           <a href="#1-1避免破坏性修改" class="heading-link"><i class="fas fa-link"></i></a><a href="#1-1避免破坏性修改" class="headerlink" title="1.1避免破坏性修改"></a>1.1避免破坏性修改</h2>
-      <figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果在一个微服务的响应中添加一个字段，服务的消费方不应该受到影响。</span><br></pre></td></tr></table></div></figure>
-
+      <p>如果在一个微服务的响应中添加一个字段，服务的消费方不应该受到影响。</p>
 
         <h2 id="1-2保证API的技术无关性"   >
           <a href="#1-2保证API的技术无关性" class="heading-link"><i class="fas fa-link"></i></a><a href="#1-2保证API的技术无关性" class="headerlink" title="1.2保证API的技术无关性"></a>1.2保证API的技术无关性</h2>
-      <figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">微服务之间的通信应该是与技术无关的。</span><br></pre></td></tr></table></div></figure>
-
-
+      <p>微服务之间的通信应该是与技术无关的。</p>
 
         <h2 id="1-3使服务的消费方易于使用"   >
           <a href="#1-3使服务的消费方易于使用" class="heading-link"><i class="fas fa-link"></i></a><a href="#1-3使服务的消费方易于使用" class="headerlink" title="1.3使服务的消费方易于使用"></a>1.3使服务的消费方易于使用</h2>
-      <figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果消费方使用该服务比登天还难，那么无论该微服务多漂亮都没用任何意义。但同时，易于使用的服务可能内部封装了很多细节，这会增加耦合。</span><br></pre></td></tr></table></div></figure>
-
-
+      <p>如果消费方使用该服务比登天还难，那么无论该微服务多漂亮都没用任何意义。但同时，易于使用的服务可能内部封装了很多细节，这会增加耦合。</p>
 
         <h2 id="1-4隐藏内部实现细节"   >
           <a href="#1-4隐藏内部实现细节" class="heading-link"><i class="fas fa-link"></i></a><a href="#1-4隐藏内部实现细节" class="headerlink" title="1.4隐藏内部实现细节"></a>1.4隐藏内部实现细节</h2>
-      <figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">消费方与服务方的内部细节应该是分开的，如果与细节绑定，则意味着改变服务内部的一些变化，消费方也要跟着修改，这会增加修改的成本。</span><br></pre></td></tr></table></div></figure>
+      <p>消费方与服务方的内部细节应该是分开的，如果与细节绑定，则意味着改变服务内部的一些变化，消费方也要跟着修改，这会增加修改的成本。</p>
 
         <h1 id="2-数据库共享？"   >
           <a href="#2-数据库共享？" class="heading-link"><i class="fas fa-link"></i></a><a href="#2-数据库共享？" class="headerlink" title="2.数据库共享？"></a>2.数据库共享？</h1>
