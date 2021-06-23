@@ -1,0 +1,686 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/favicon-16x16.png?v=2.6.2" type="image/png" sizes="16x16"><link rel="icon" href="/favicon-32x32.png?v=2.6.2" type="image/png" sizes="32x32"><meta name="description" content="前言       平时的工作中经常碰到很多疑难问题的处理，在解决问题的同时，有一些工具起到了相当大的作用，在此书写下来，一是作为笔记，可以让自己后续忘记了可快速翻阅。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java线上问题排查">
+<meta property="og:url" content="http://example.com/2021/06/23/java%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="学而时习之,不亦说乎">
+<meta property="og:description" content="前言       平时的工作中经常碰到很多疑难问题的处理，在解决问题的同时，有一些工具起到了相当大的作用，在此书写下来，一是作为笔记，可以让自己后续忘记了可快速翻阅。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/b0fbcc8fefca87c564e2c796e9e1e174.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/b4a9ed9ddbbf551648f83fd954e0d477.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/fd778cb83cc8026945fb91303410e232.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/60b61f376be6c37024e27aa171c2083d.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/86b3529ed6bf823f1844d058113fe747.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/e6537c9d41e43f8930ae617d87a935c6.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/33a661488dd1aebd00390a5babcf5b66.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/79ac58f6bbe2d430980ef28749175443.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/d35b62fa88567dcd94dddf290ee847b8.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/818323a396d5a0b5e5cd7bbf434f088b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/587a343ca247ee0a3e28662c76d05373.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/eb6c68b0f3ad27871eabdb2f375e21af.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/f5183b0c56fb5ef47da160a73cb14ea4.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/397996c7816f95fd29021d184950b93e.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/7ad703f582d7a87bec0f80d465410161.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/599641893d854b6815373d96472a9524.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/486cdfd28504b27d36df928d0e53fd31.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/2ece2b5dae18ea90f51bb0e181e45870.png">
+<meta property="article:published_time" content="2021-06-23T01:54:17.481Z">
+<meta property="article:modified_time" content="2021-06-23T02:01:32.529Z">
+<meta property="article:author" content="guwenxiang">
+<meta property="article:tag" content="技能包">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/img_convert/b0fbcc8fefca87c564e2c796e9e1e174.png"><title>java线上问题排查 | 学而时习之,不亦说乎</title><link ref="canonical" href="http://example.com/2021/06/23/java%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.6.2"><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  assistSearch: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"light","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: false,
+  pjax: undefined,
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="th"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="archive"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">学而时习之,不亦说乎</div><div class="header-banner-info__subtitle"></div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">java线上问题排查</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-06-23</span></span><span class="post-meta-item post-meta-item--visitors"><span class="post-meta-item__icon"><i class="fas fa-eye"></i></span><span class="post-meta-item__info">阅读次数</span><span class="post-meta-item__value" id="busuanzi_value_page_pv"></span></span></div></header><div class="post-body">
+        <h2 id="前言"   >
+          <a href="#前言" class="heading-link"><i class="fas fa-link"></i></a><a href="#前言" class="headerlink" title="前言"></a>前言</h2>
+      <p>平时的工作中经常碰到很多疑难问题的处理，在解决问题的同时，有一些工具起到了相当大的作用，在此书写下来，一是作为笔记，可以让自己后续忘记了可快速翻阅。</p>
+<span id="more"></span>
+
+
+        <h2 id="Linux命令类"   >
+          <a href="#Linux命令类" class="heading-link"><i class="fas fa-link"></i></a><a href="#Linux命令类" class="headerlink" title="Linux命令类"></a>Linux命令类</h2>
+      
+        <h3 id="tail"   >
+          <a href="#tail" class="heading-link"><i class="fas fa-link"></i></a><a href="#tail" class="headerlink" title="tail"></a>tail</h3>
+      <p>最常用的tail -f</p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -300f shopbase.log #倒数300行并进入实时监听文件写入模式</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="grep"   >
+          <a href="#grep" class="heading-link"><i class="fas fa-link"></i></a><a href="#grep" class="headerlink" title="grep"></a>grep</h3>
+      <figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">grep forest f.txt     #文件查找</span><br><span class="line">grep forest f.txt cpf.txt #多文件查找</span><br><span class="line">grep &#x27;log&#x27; /home/admin -r -n #目录下查找所有符合关键字的文件</span><br><span class="line">cat f.txt | grep -i shopbase    </span><br><span class="line">grep &#x27;shopbase&#x27; /home/admin -r -n --include *.&#123;vm,java&#125; #指定文件后缀</span><br><span class="line">grep &#x27;shopbase&#x27; /home/admin -r -n --exclude *.&#123;vm,java&#125; #反匹配</span><br><span class="line">seq 10 | grep 5 -A 3    #上匹配</span><br><span class="line">seq 10 | grep 5 -B 3    #下匹配</span><br><span class="line">seq 10 | grep 5 -C 3    #上下匹配，平时用这个就妥了</span><br><span class="line">cat f.txt | grep -c <span class="string">&#x27;SHOPBASE&#x27;</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="awk"   >
+          <a href="#awk" class="heading-link"><i class="fas fa-link"></i></a><a href="#awk" class="headerlink" title="awk"></a>awk</h3>
+      <p>1 基础命令</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $4,$6&#125;&#x27;</span> f.txt</span><br><span class="line">awk <span class="string">&#x27;&#123;print NR,$0&#125;&#x27;</span> f.txt cpf.txt    </span><br><span class="line">awk <span class="string">&#x27;&#123;print FNR,$0&#125;&#x27;</span> f.txt cpf.txt</span><br><span class="line">awk <span class="string">&#x27;&#123;print FNR,FILENAME,$0&#125;&#x27;</span> f.txt cpf.txt</span><br><span class="line">awk <span class="string">&#x27;&#123;print FILENAME,&quot;NR=&quot;NR,&quot;FNR=&quot;FNR,&quot;$&quot;NF&quot;=&quot;$NF&#125;&#x27;</span> f.txt cpf.txt</span><br><span class="line">echo <span class="number">1</span>:<span class="number">2</span>:<span class="number">3</span>:<span class="number">4</span> | awk -F: <span class="string">&#x27;&#123;print $1,$2,$3,$4&#125;&#x27;</span></span><br></pre></td></tr></table></div></figure>
+
+<p>2 匹配</p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;/ldb/ &#123;print&#125;&#x27; f.txt   #匹配ldb</span><br><span class="line">awk &#x27;!/ldb/ &#123;print&#125;&#x27; f.txt  #不匹配ldb</span><br><span class="line">awk &#x27;/ldb/ &amp;&amp; /LISTEN/ &#123;print&#125;&#x27; f.txt   #匹配ldb和LISTEN</span><br><span class="line">awk &#x27;$5 ~ /ldb/ &#123;print&#125;&#x27; f.txt #第五列匹配ldb</span><br></pre></td></tr></table></div></figure>
+
+<p>3 内建变量</p>
+<p>NR:NR表示从awk开始执行后，按照记录分隔符读取的数据次数，默认的记录分隔符为换行符，因此默认的就是读取的数据行数，NR可以理解为Number of Record的缩写。</p>
+<p>FNR:在awk处理多个输入文件的时候，在处理完第一个文件后，NR并不会从1开始，而是继续累加，因此就出现了FNR，每当处理一个新文件的时候，FNR就从1开始计数，FNR可以理解为File Number of Record。</p>
+<p>NF: NF表示目前的记录被分割的字段的数目，NF可以理解为Number of Field。</p>
+
+        <h3 id="find"   >
+          <a href="#find" class="heading-link"><i class="fas fa-link"></i></a><a href="#find" class="headerlink" title="find"></a>find</h3>
+      <figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin find /home/admin /tmp /usr -name \*.log(多个目录去找)</span><br><span class="line">find . -iname \*.txt(大小写都匹配)</span><br><span class="line">find . -<span class="function">type <span class="title">d</span><span class="params">(当前目录下的所有子目录)</span></span></span><br><span class="line"><span class="function">find /usr -type <span class="title">l</span><span class="params">(当前目录下所有的符号链接)</span></span></span><br><span class="line"><span class="function">find /usr -type l -name &quot;z*&quot; -<span class="title">ls</span><span class="params">(符号链接的详细信息 eg:inode,目录)</span></span></span><br><span class="line"><span class="function">find /home/admin -size +250000<span class="title">k</span><span class="params">(超过250000k的文件，当然+改成-就是小于了)</span></span></span><br><span class="line"><span class="function">find /home/admin f -perm 777 -exec ls -l </span>&#123;&#125; \; (按照权限查询文件)</span><br><span class="line">find /home/admin -atime -<span class="number">1</span>  <span class="number">1</span>天内访问过的文件</span><br><span class="line">find /home/admin -ctime -<span class="number">1</span>  <span class="number">1</span>天内状态改变过的文件    </span><br><span class="line">find /home/admin -mtime -<span class="number">1</span>  <span class="number">1</span>天内修改过的文件</span><br><span class="line">find /home/admin -amin -<span class="number">1</span>  <span class="number">1</span>分钟内访问过的文件</span><br><span class="line">find /home/admin -cmin -<span class="number">1</span>  <span class="number">1</span>分钟内状态改变过的文件    </span><br><span class="line">find /home/admin -mmin -<span class="number">1</span>  <span class="number">1</span>分钟内修改过的文件</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="pgm"   >
+          <a href="#pgm" class="heading-link"><i class="fas fa-link"></i></a><a href="#pgm" class="headerlink" title="pgm"></a>pgm</h3>
+      <p>批量查询vm-shopbase满足条件的日志</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pgm -A -f vm-shopbase <span class="string">&#x27;cat /home/admin/shopbase/logs/shopbase.log.2017-01-17|grep 2069861630&#x27;</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="tsar"   >
+          <a href="#tsar" class="heading-link"><i class="fas fa-link"></i></a><a href="#tsar" class="headerlink" title="tsar"></a>tsar</h3>
+      <p>tsar是咱公司自己的采集工具。很好用, 将历史收集到的数据持久化在磁盘上，所以我们快速来查询历史的系统数据。当然实时的应用情况也是可以查询的啦。大部分机器上都有安装。</p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsar  ##可以查看最近一天的各项指标</span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/b0fbcc8fefca87c564e2c796e9e1e174.png" alt="pic_ab097f25.png"></p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsar --live ##可以查看实时指标，默认五秒一刷</span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/b4a9ed9ddbbf551648f83fd954e0d477.png" alt="pic_3dced38e.png"></p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsar -d 20161218 ##指定查看某天的数据，貌似最多只能看四个月的数据</span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/fd778cb83cc8026945fb91303410e232.png" alt="pic_5a95372b.png"></p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tsar --mem</span><br><span class="line">tsar --load</span><br><span class="line">tsar --cpu</span><br><span class="line">##当然这个也可以和-d参数配合来查询某天的单个指标的情况 </span><br></pre></td></tr></table></div></figure>
+
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><p><img src="https://img-blog.csdnimg.cn/img_convert/60b61f376be6c37024e27aa171c2083d.png" alt="pic_bd944bc9.png"></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/86b3529ed6bf823f1844d058113fe747.png" alt="pic_11e1b1df.png"></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/e6537c9d41e43f8930ae617d87a935c6.png" alt="pic_b7d57c33.png"></p>
+
+        <h3 id="top"   >
+          <a href="#top" class="heading-link"><i class="fas fa-link"></i></a><a href="#top" class="headerlink" title="top"></a>top</h3>
+      <p>top除了看一些基本信息之外，剩下的就是配合来查询vm的各种问题了</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep java</span><br><span class="line">top -H -p pid</span><br></pre></td></tr></table></div></figure>
+
+<p>获得线程10进制转16进制后jstack去抓看这个线程到底在干啥</p>
+
+        <h3 id="其他"   >
+          <a href="#其他" class="heading-link"><i class="fas fa-link"></i></a><a href="#其他" class="headerlink" title="其他"></a>其他</h3>
+      <figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -nat|awk  <span class="string">&#x27;&#123;print $6&#125;&#x27;</span>|sort|uniq -c|sort -rn </span><br><span class="line">#查看当前连接，注意close_wait偏高的情况，比如如下</span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/33a661488dd1aebd00390a5babcf5b66.png" alt="pic_15b87e11.png"></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/79ac58f6bbe2d430980ef28749175443.png" alt="pic_ac69ebc0.png"></p>
+
+        <h2 id="排查利器"   >
+          <a href="#排查利器" class="heading-link"><i class="fas fa-link"></i></a><a href="#排查利器" class="headerlink" title="排查利器"></a>排查利器</h2>
+      
+        <h3 id="btrace"   >
+          <a href="#btrace" class="heading-link"><i class="fas fa-link"></i></a><a href="#btrace" class="headerlink" title="btrace"></a>btrace</h3>
+      <p>首当其冲的要说的是btrace。真是生产环境&amp;预发的排查问题大杀器。简介什么的就不说了。直接上代码干</p>
+<p>1、查看当前谁调用了ArrayList的add方法，同时只打印当前ArrayList的size大于500的线程调用栈</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OnMethod(clazz = &quot;java.util.ArrayList&quot;, method=&quot;add&quot;, location = @Location(value = Kind.CALL, clazz = &quot;/./&quot;, method = &quot;/./&quot;))</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">m</span><span class="params">(<span class="meta">@ProbeClassName</span> String probeClass, <span class="meta">@ProbeMethodName</span> String probeMethod, <span class="meta">@TargetInstance</span> Object instance, <span class="meta">@TargetMethodOrField</span> String method)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(getInt(field(<span class="string">&quot;java.util.ArrayList&quot;</span>, <span class="string">&quot;size&quot;</span>), instance) &gt; <span class="number">479</span>)&#123;</span><br><span class="line">    println(<span class="string">&quot;check who ArrayList.add method:&quot;</span> + probeClass + <span class="string">&quot;#&quot;</span> + probeMethod  + <span class="string">&quot;, method:&quot;</span> + method + <span class="string">&quot;, size:&quot;</span> + getInt(field(<span class="string">&quot;java.util.ArrayList&quot;</span>, <span class="string">&quot;size&quot;</span>), instance));</span><br><span class="line">    jstack();</span><br><span class="line">    println();</span><br><span class="line">    println(<span class="string">&quot;===========================&quot;</span>);</span><br><span class="line">    println();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+<p>2、监控当前服务方法被调用时返回的值以及请求的参数</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@OnMethod(clazz = &quot;com.taobao.sellerhome.transfer.biz.impl.C2CApplyerServiceImpl&quot;, method=&quot;nav&quot;, location = @Location(value = Kind.RETURN))</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">mt</span><span class="params">(<span class="keyword">long</span> userId, <span class="keyword">int</span> current, <span class="keyword">int</span> relation, String check, String redirectUrl, <span class="meta">@Return</span> AnyType result)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">&quot;parameter# userId:&quot;</span> + userId + <span class="string">&quot;, current:&quot;</span> + current + <span class="string">&quot;, relation:&quot;</span> + relation + <span class="string">&quot;, check:&quot;</span> + check + <span class="string">&quot;, redirectUrl:&quot;</span> + redirectUrl + <span class="string">&quot;, result:&quot;</span> + result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+<p>其他功能集团的一些工具或多或少都有，就不说了。感兴趣的请移步。</p>
+<blockquote>
+<p><span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://github.com/btraceio/btrace" >https://github.com/btraceio/btrace</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</blockquote>
+
+        <h4 id="注意"   >
+          <a href="#注意" class="heading-link"><i class="fas fa-link"></i></a><a href="#注意" class="headerlink" title="注意:"></a>注意:</h4>
+      <ul>
+<li> 经过观察，1.3.9的release输出不稳定，要多触发几次才能看到正确的结果</li>
+<li> 正则表达式匹配trace类时范围一定要控制，否则极有可能出现跑满CPU导致应用卡死的情况</li>
+<li> 由于是字节码注入的原理，想要应用恢复到正常情况，需要重启应用。</li>
+</ul>
+
+        <h3 id="Greys"   >
+          <a href="#Greys" class="heading-link"><i class="fas fa-link"></i></a><a href="#Greys" class="headerlink" title="Greys"></a>Greys</h3>
+      <p>Greys是杜琨的大作吧。说几个挺棒的功能(部分功能和btrace重合):</p>
+<p>sc -df xxx: 输出当前类的详情,包括源码位置和classloader结构</p>
+<p>trace class method: 相当喜欢这个功能! 很早前可以早JProfiler看到这个功能。打印出当前方法调用的耗时情况，细分到每个方法。对排查方法性能时很有帮助，比如我之前这篇就是使用了trace命令来的:<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.atatech.org/articles/52947%E3%80%82" >http://www.atatech.org/articles/52947。</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>其他功能部分和btrace重合，可以选用，感兴趣的请移步。<br><span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.atatech.org/articles/26247" >http://www.atatech.org/articles/26247</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>另外相关联的是arthas，他是基于Greys的，感兴趣的再移步<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://mw.alibaba-inc.com/products/arthas/docs/middleware-container/arthas.wiki/home.html?spm=a1z9z.8109794.header.32.1lsoMc" >http://mw.alibaba-inc.com/products/arthas/docs/middleware-container/arthas.wiki/home.html?spm=a1z9z.8109794.header.32.1lsoMc</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="javOSize"   >
+          <a href="#javOSize" class="heading-link"><i class="fas fa-link"></i></a><a href="#javOSize" class="headerlink" title="javOSize"></a>javOSize</h3>
+      <p>就说一个功能<br>classes：通过修改了字节码，改变了类的内容，即时生效。所以可以做到快速的在某个地方打个日志看看输出，缺点是对代码的侵入性太大。但是如果自己知道自己在干嘛，的确是不错的玩意儿。</p>
+<p>其他功能Greys和btrace都能很轻易做的到，不说了。</p>
+<p>可以看看我之前写的一篇javOSize的简介<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.atatech.org/articles/38546" >http://www.atatech.org/articles/38546</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br>官网请移步<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.javosize.com/" >http://www.javosize.com/</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="JProfiler"   >
+          <a href="#JProfiler" class="heading-link"><i class="fas fa-link"></i></a><a href="#JProfiler" class="headerlink" title="JProfiler"></a>JProfiler</h3>
+      <p>之前判断许多问题要通过JProfiler，但是现在Greys和btrace基本都能搞定了。再加上出问题的基本上都是生产环境(网络隔离)，所以基本不怎么使用了，但是还是要标记一下。</p>
+<p>官网请移步<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://www.ej-technologies.com/products/jprofiler/overview.html" >https://www.ej-technologies.com/products/jprofiler/overview.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="大杀器"   >
+          <a href="#大杀器" class="heading-link"><i class="fas fa-link"></i></a><a href="#大杀器" class="headerlink" title="大杀器"></a>大杀器</h2>
+      
+        <h3 id="eclipseMAT"   >
+          <a href="#eclipseMAT" class="heading-link"><i class="fas fa-link"></i></a><a href="#eclipseMAT" class="headerlink" title="eclipseMAT"></a>eclipseMAT</h3>
+      <p>可作为eclipse的插件，也可作为单独的程序打开。详情请移步<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.eclipse.org/mat/" >http://www.eclipse.org/mat/</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="zprofiler"   >
+          <a href="#zprofiler" class="heading-link"><i class="fas fa-link"></i></a><a href="#zprofiler" class="headerlink" title="zprofiler"></a>zprofiler</h3>
+      <p>集团内的开发应该是无人不知无人不晓了。简而言之一句话:有了zprofiler还要mat干嘛，详情请移步zprofiler.alibaba-inc.com</p>
+
+        <h2 id="java三板斧，噢不对，是七把"   >
+          <a href="#java三板斧，噢不对，是七把" class="heading-link"><i class="fas fa-link"></i></a><a href="#java三板斧，噢不对，是七把" class="headerlink" title="java三板斧，噢不对，是七把"></a>java三板斧，噢不对，是七把</h2>
+      
+        <h3 id="jps"   >
+          <a href="#jps" class="heading-link"><i class="fas fa-link"></i></a><a href="#jps" class="headerlink" title="jps"></a>jps</h3>
+      <p>我只用一条命令：</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/java/bin/jps -mlvV</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="-1"   >
+          <a href="#-1" class="heading-link"><i class="fas fa-link"></i></a><a href="#-1" class="headerlink" title=""></a></h3>
+      <p><img src="https://img-blog.csdnimg.cn/img_convert/d35b62fa88567dcd94dddf290ee847b8.png" alt="pic_766514a4.png"></p>
+
+        <h3 id="jstack"   >
+          <a href="#jstack" class="heading-link"><i class="fas fa-link"></i></a><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h3>
+      <p>普通用法:</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jstack <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/818323a396d5a0b5e5cd7bbf434f088b.png" alt="pic_3d704f14.png"></p>
+<p>native+java栈:</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jstack -m <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="-2"   >
+          <a href="#-2" class="heading-link"><i class="fas fa-link"></i></a><a href="#-2" class="headerlink" title=""></a></h3>
+      <p><img src="https://img-blog.csdnimg.cn/img_convert/587a343ca247ee0a3e28662c76d05373.png" alt="pic_0e704112.png"></p>
+
+        <h3 id="-3"   >
+          <a href="#-3" class="heading-link"><i class="fas fa-link"></i></a><a href="#-3" class="headerlink" title=""></a></h3>
+      
+        <h3 id="推荐阅读：-jstack命令：教你如何排查多线程问题-jstack-。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。"   >
+          <a href="#推荐阅读：-jstack命令：教你如何排查多线程问题-jstack-。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。" class="heading-link"><i class="fas fa-link"></i></a><a href="#推荐阅读：-jstack命令：教你如何排查多线程问题-jstack-。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。" class="headerlink" title="推荐阅读：[jstack命令：教你如何排查多线程问题][jstack]。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。"></a>推荐阅读：[jstack命令：教你如何排查多线程问题][jstack]。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。</h3>
+      
+        <h3 id="jinfo"   >
+          <a href="#jinfo" class="heading-link"><i class="fas fa-link"></i></a><a href="#jinfo" class="headerlink" title="jinfo"></a>jinfo</h3>
+      <p>可看系统启动的参数，如下</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jinfo -flags <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="-4"   >
+          <a href="#-4" class="heading-link"><i class="fas fa-link"></i></a><a href="#-4" class="headerlink" title=""></a></h3>
+      <p><img src="https://img-blog.csdnimg.cn/img_convert/eb6c68b0f3ad27871eabdb2f375e21af.png" alt="pic_42972067.png"></p>
+
+        <h3 id="jmap"   >
+          <a href="#jmap" class="heading-link"><i class="fas fa-link"></i></a><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h3>
+      <p>两个用途</p>
+<p>1.查看堆的情况</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jmap -heap <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/f5183b0c56fb5ef47da160a73cb14ea4.png" alt="pic_2b7a061d.png"></p>
+<p>2.dump</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jmap -dump:live,format=b,file=/tmp/heap2.bin <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+<p>或者</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jmap -dump:format=b,file=/tmp/heap3.bin <span class="number">2815</span></span><br></pre></td></tr></table></div></figure>
+
+<p>3.看看堆都被谁占了? 再配合zprofiler和btrace，排查问题简直是如虎添翼</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jmap -histo <span class="number">2815</span> | head -<span class="number">10</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="-5"   >
+          <a href="#-5" class="heading-link"><i class="fas fa-link"></i></a><a href="#-5" class="headerlink" title=""></a></h3>
+      <p><img src="https://img-blog.csdnimg.cn/img_convert/397996c7816f95fd29021d184950b93e.png" alt="pic_11629b6e.png"></p>
+
+        <h3 id="jstat"   >
+          <a href="#jstat" class="heading-link"><i class="fas fa-link"></i></a><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h3>
+      <p>jstat参数众多，但是使用一个就够了</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/install/ajdk-8_1_1_fp1-b52/bin/jstat -gcutil <span class="number">2815</span> <span class="number">1000</span> </span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="-6"   >
+          <a href="#-6" class="heading-link"><i class="fas fa-link"></i></a><a href="#-6" class="headerlink" title=""></a></h3>
+      <p><img src="https://img-blog.csdnimg.cn/img_convert/7ad703f582d7a87bec0f80d465410161.png" alt="pic_bc0e4cdf.png"></p>
+
+        <h3 id="jdb"   >
+          <a href="#jdb" class="heading-link"><i class="fas fa-link"></i></a><a href="#jdb" class="headerlink" title="jdb"></a>jdb</h3>
+      <p>时至今日，jdb也是经常使用的。</p>
+<p>jdb可以用来预发debug,假设你预发的java_home是/opt/taobao/java/，远程调试端口是8000.那么</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/java/bin/jdb -attach <span class="number">8000</span></span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/599641893d854b6815373d96472a9524.png" alt="pic_b91a276f.png"></p>
+<p>出现以上代表jdb启动成功。后续可以进行设置断点进行调试。</p>
+<p>具体参数可见oracle官方说明<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jdb.html" >http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jdb.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="CHLSDB"   >
+          <a href="#CHLSDB" class="heading-link"><i class="fas fa-link"></i></a><a href="#CHLSDB" class="headerlink" title="CHLSDB"></a>CHLSDB</h3>
+      <p>CHLSDB感觉很多情况下可以看到更好玩的东西，不详细叙述了。查询资料听说jstack和jmap等工具就是基于它的。</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -u admin /opt/taobao/java/bin/java -classpath /opt/taobao/java/lib/sa-jdi.jar sun.jvm.hotspot.CLHSDB</span><br></pre></td></tr></table></div></figure>
+
+<p>更详细的可见R大此贴</p>
+<blockquote>
+<p><span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://rednaxelafx.iteye.com/blog/1847971" >http://rednaxelafx.iteye.com/blog/1847971</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</blockquote>
+
+        <h2 id="plugin-of-intellij-idea"   >
+          <a href="#plugin-of-intellij-idea" class="heading-link"><i class="fas fa-link"></i></a><a href="#plugin-of-intellij-idea" class="headerlink" title="plugin of intellij idea"></a>plugin of intellij idea</h2>
+      
+        <h3 id="key-promoter"   >
+          <a href="#key-promoter" class="heading-link"><i class="fas fa-link"></i></a><a href="#key-promoter" class="headerlink" title="key promoter"></a>key promoter</h3>
+      <p>快捷键一次你记不住，多来几次你总能记住了吧？</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/486cdfd28504b27d36df928d0e53fd31.png" alt="pic_07854b0b.png"></p>
+
+        <h3 id="maven-helper"   >
+          <a href="#maven-helper" class="heading-link"><i class="fas fa-link"></i></a><a href="#maven-helper" class="headerlink" title="maven helper"></a>maven helper</h3>
+      <p>分析maven依赖的好帮手。</p>
+
+        <h2 id="VM-options"   >
+          <a href="#VM-options" class="heading-link"><i class="fas fa-link"></i></a><a href="#VM-options" class="headerlink" title="VM options"></a>VM options</h2>
+      <p>1、你的类到底是从哪个文件加载进来的？</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XX:+TraceClassLoading</span><br><span class="line">结果形如[Loaded java.lang.invoke.MethodHandleImpl$Lazy from D:\programme\jdk\jdk8U74\jre\lib\rt.jar]</span><br></pre></td></tr></table></div></figure>
+
+<p>2、应用挂了输出dump文件</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/admin/logs/java.hprof</span><br><span class="line">集团的vm参数里边基本都有这个选项</span><br></pre></td></tr></table></div></figure>
+
+
+        <h2 id="jar包冲突"   >
+          <a href="#jar包冲突" class="heading-link"><i class="fas fa-link"></i></a><a href="#jar包冲突" class="headerlink" title="jar包冲突"></a>jar包冲突</h2>
+      <p>把这个单独写个大标题不过分吧？每个人或多或少都处理过这种烦人的case。我特么下边这么多方案不信就搞不定你?</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn dependency:tree &gt; ~/dependency.txt</span><br></pre></td></tr></table></div></figure>
+
+<p>打出所有依赖</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn dependency:tree -Dverbose -Dincludes=groupId:artifactId</span><br></pre></td></tr></table></div></figure>
+
+<p>只打出指定groupId和artifactId的依赖关系</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+TraceClassLoading</span><br></pre></td></tr></table></div></figure>
+
+<p>vm启动脚本加入。在tomcat启动脚本中可见加载类的详细信息</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-verbose</span><br></pre></td></tr></table></div></figure>
+
+<p>vm启动脚本加入。在tomcat启动脚本中可见加载类的详细信息</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">greys:sc</span><br></pre></td></tr></table></div></figure>
+
+<p>greys的sc命令也能清晰的看到当前类是从哪里加载过来的</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tomcat-classloader-locate</span><br></pre></td></tr></table></div></figure>
+
+<p>通过以下url可以获知当前类是从哪里加载的</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="comment">//localhost:8006/classloader/locate?class=org.apache.xerces.xs.XSObject</span></span><br></pre></td></tr></table></div></figure>
+
+
+        <h2 id="ALI-TOMCAT带给我们的惊喜-感谢务观"   >
+          <a href="#ALI-TOMCAT带给我们的惊喜-感谢务观" class="heading-link"><i class="fas fa-link"></i></a><a href="#ALI-TOMCAT带给我们的惊喜-感谢务观" class="headerlink" title="ALI-TOMCAT带给我们的惊喜(感谢务观)"></a>ALI-TOMCAT带给我们的惊喜(感谢务观)</h2>
+      <p>列出容器加载的jar列表</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="comment">//localhost:8006/classloader/jars</span></span><br></pre></td></tr></table></div></figure>
+
+<p>列出当前当当前类加载的实际jar包位置，解决类冲突时有用</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="comment">//localhost:8006/classloader/locate?class=org.apache.xerces.xs.XSObject</span></span><br></pre></td></tr></table></div></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/img_convert/2ece2b5dae18ea90f51bb0e181e45870.png" alt="pic_05d6ef8e.png"></p>
+
+        <h2 id="其他-1"   >
+          <a href="#其他-1" class="heading-link"><i class="fas fa-link"></i></a><a href="#其他-1" class="headerlink" title="其他"></a>其他</h2>
+      
+        <h3 id="gpref"   >
+          <a href="#gpref" class="heading-link"><i class="fas fa-link"></i></a><a href="#gpref" class="headerlink" title="gpref"></a>gpref</h3>
+      <blockquote>
+<p><span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="http://www.atatech.org/articles/33317" >http://www.atatech.org/articles/33317</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</blockquote>
+
+        <h3 id="dmesg"   >
+          <a href="#dmesg" class="heading-link"><i class="fas fa-link"></i></a><a href="#dmesg" class="headerlink" title="dmesg"></a>dmesg</h3>
+      <p>如果发现自己的java进程悄无声息的消失了，几乎没有留下任何线索，那么dmesg一发，很有可能有你想要的。</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dmesg|grep -i kill|less</span><br></pre></td></tr></table></div></figure>
+
+<p>去找关键字oom_killer。找到的结果类似如下:</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">6710782.021013</span>] java invoked oom-killer: gfp_mask=<span class="number">0xd0</span>, order=<span class="number">0</span>, oom_adj=<span class="number">0</span>, oom_scoe_adj=<span class="number">0</span></span><br><span class="line">[<span class="number">6710782.070639</span>] [&lt;ffffffff81118898&gt;] ? oom_kill_process+<span class="number">0x68</span>/<span class="number">0x140</span> </span><br><span class="line">[<span class="number">6710782.257588</span>] Task in /LXC011175068174 killed as a result of limit of /LXC011175068174 </span><br><span class="line">[<span class="number">6710784.698347</span>] Memory cgroup out of memory: Kill process <span class="number">215701</span> (java) score <span class="number">854</span> or sacrifice child </span><br><span class="line">[<span class="number">6710784.707978</span>] Killed process <span class="number">215701</span>, UID <span class="number">679</span>, (java) total-vm:11017300kB, anon-rss:7152432kB, file-rss:1232kB</span><br></pre></td></tr></table></div></figure>
+
+<p>以上表明，对应的java进程被系统的OOM Killer给干掉了，得分为854.</p>
+<p>解释一下OOM killer（Out-Of-Memory killer），该机制会监控机器的内存资源消耗。当机器内存耗尽前，该机制会扫描所有的进程（按照一定规则计算，内存占用，时间等），挑选出得分最高的进程，然后杀死，从而保护机器。</p>
+<p>dmesg日志时间转换公式:</p>
+<p>log实际时间=格林威治1970-01-01+(当前时间秒数-系统启动至今的秒数+dmesg打印的log时间)秒数：</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">date -d <span class="string">&quot;1970-01-01 UTC `echo &quot;</span>$(date +%s)-$(cat /proc/uptime|cut -f <span class="number">1</span> -d<span class="string">&#x27; &#x27;</span>)+<span class="number">12288812.926194</span><span class="string">&quot;|bc ` seconds&quot;</span></span><br></pre></td></tr></table></div></figure>
+
+<p>剩下的，就是看看为什么内存这么大，触发了OOM-Killer了。</p>
+
+        <h2 id="新技能get"   >
+          <a href="#新技能get" class="heading-link"><i class="fas fa-link"></i></a><a href="#新技能get" class="headerlink" title="新技能get"></a>新技能get</h2>
+      
+        <h3 id="RateLimiter"   >
+          <a href="#RateLimiter" class="heading-link"><i class="fas fa-link"></i></a><a href="#RateLimiter" class="headerlink" title="RateLimiter"></a>RateLimiter</h3>
+      <p>想要精细的控制QPS? 比如这样一个场景，你调用某个接口，对方明确需要你限制你的QPS在400之内你怎么控制？这个时候RateLimiter就有了用武之地。</p>
+<p>出自：<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://developer.aliyun.com/article/69520" >https://developer.aliyun.com/article/69520</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="http://example.com/tags/%E6%8A%80%E8%83%BD%E5%8C%85/">技能包</a></span></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/06/23/java%E7%BA%BF%E4%B8%8A%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A51/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">java线上问题排查招式</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/06/21/java%E4%B8%AD%E7%9A%84%E9%94%81/"><span class="paginator-prev__text">java中的锁</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">
+          前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E5%91%BD%E4%BB%A4%E7%B1%BB"><span class="toc-text">
+          Linux命令类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tail"><span class="toc-text">
+          tail</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#grep"><span class="toc-text">
+          grep</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#awk"><span class="toc-text">
+          awk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#find"><span class="toc-text">
+          find</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pgm"><span class="toc-text">
+          pgm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tsar"><span class="toc-text">
+          tsar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text"></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#top"><span class="toc-text">
+          top</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">
+          其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5%E5%88%A9%E5%99%A8"><span class="toc-text">
+          排查利器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#btrace"><span class="toc-text">
+          btrace</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">
+          注意:</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Greys"><span class="toc-text">
+          Greys</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#javOSize"><span class="toc-text">
+          javOSize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JProfiler"><span class="toc-text">
+          JProfiler</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E6%9D%80%E5%99%A8"><span class="toc-text">
+          大杀器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#eclipseMAT"><span class="toc-text">
+          eclipseMAT</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zprofiler"><span class="toc-text">
+          zprofiler</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#java%E4%B8%89%E6%9D%BF%E6%96%A7%EF%BC%8C%E5%99%A2%E4%B8%8D%E5%AF%B9%EF%BC%8C%E6%98%AF%E4%B8%83%E6%8A%8A"><span class="toc-text">
+          java三板斧，噢不对，是七把</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jps"><span class="toc-text">
+          jps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-1"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jstack"><span class="toc-text">
+          jstack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-2"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-3"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%EF%BC%9A-jstack%E5%91%BD%E4%BB%A4%EF%BC%9A%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E6%8E%92%E6%9F%A5%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%97%AE%E9%A2%98-jstack-%E3%80%82%E5%85%B3%E6%B3%A8Java%E6%8A%80%E6%9C%AF%E6%A0%88%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7%EF%BC%8C%E5%9C%A8%E5%90%8E%E5%8F%B0%E5%9B%9E%E5%A4%8D%E5%85%B3%E9%94%AE%E5%AD%97%EF%BC%9AJava%EF%BC%8C%E5%8F%AF%E4%BB%A5%E8%8E%B7%E5%8F%96%E6%9B%B4%E5%A4%9A%E6%A0%88%E9%95%BF%E6%95%B4%E7%90%86%E7%9A%84Java%E6%8A%80%E6%9C%AF%E5%B9%B2%E8%B4%A7%E3%80%82"><span class="toc-text">
+          推荐阅读：[jstack命令：教你如何排查多线程问题][jstack]。关注Java技术栈微信公众号，在后台回复关键字：Java，可以获取更多栈长整理的Java技术干货。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jinfo"><span class="toc-text">
+          jinfo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-4"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jmap"><span class="toc-text">
+          jmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-5"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jstat"><span class="toc-text">
+          jstat</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#-6"><span class="toc-text">
+          </span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jdb"><span class="toc-text">
+          jdb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CHLSDB"><span class="toc-text">
+          CHLSDB</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#plugin-of-intellij-idea"><span class="toc-text">
+          plugin of intellij idea</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#key-promoter"><span class="toc-text">
+          key promoter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#maven-helper"><span class="toc-text">
+          maven helper</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VM-options"><span class="toc-text">
+          VM options</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jar%E5%8C%85%E5%86%B2%E7%AA%81"><span class="toc-text">
+          jar包冲突</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ALI-TOMCAT%E5%B8%A6%E7%BB%99%E6%88%91%E4%BB%AC%E7%9A%84%E6%83%8A%E5%96%9C-%E6%84%9F%E8%B0%A2%E5%8A%A1%E8%A7%82"><span class="toc-text">
+          ALI-TOMCAT带给我们的惊喜(感谢务观)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96-1"><span class="toc-text">
+          其他</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#gpref"><span class="toc-text">
+          gpref</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dmesg"><span class="toc-text">
+          dmesg</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E6%8A%80%E8%83%BDget"><span class="toc-text">
+          新技能get</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RateLimiter"><span class="toc-text">
+          RateLimiter</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/images/logo/logo.jpeg" alt="avatar"></div><p class="sidebar-ov-author__text">小顾</p></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">14</div><div class="sidebar-ov-state-item__name">标签</div></a></div></section><div class="sidebar-reading"><div class="sidebar-reading-info"><span class="sidebar-reading-info__text">你已阅读了 </span><span class="sidebar-reading-info__num">0</span><span class="sidebar-reading-info__perc">%</span></div><div class="sidebar-reading-line"></div></div></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>guwenxiang</span><span class="footer__devider">|</span><span>浙ICP备19020857号</span></div><div class="busuanzi"><span class="busuanzi-siteuv"><span class="busuanzi-siteuv__icon"><i class="fas fa-user"></i></span><span class="busuanzi-siteuv__info">访问人数</span><span class="busuanzi-siteuv__value" id="busuanzi_value_site_uv"></span></span><span class="busuanzi-sitepv"><span class="busuanzi-siteuv__icon"><i class="fas fa-eye"></i></span><span class="busuanzi-siteuv__info">浏览总量</span><span class="busuanzi-siteuv__value" id="busuanzi_value_site_pv"></span></span></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);
+
+function safeOpenUrl(url) {
+  var newTab = window.open();
+  newTab.opener = null;
+  newTab.location = url;
+}
+
+function extSearch(engine) {
+  var engines = {
+    google: 'https://www.google.com/search?q=',
+    bing: 'https://cn.bing.com/search?q=',
+    baidu: 'https://www.baidu.com/s?ie=UTF-8&wd=',
+  };
+  var host = window.location.host;
+  var query = $('.search-input input').val().toLowerCase().trim();
+  var uri = engines[engine] + query + ' site:' + host;
+
+  if (query) {
+    safeOpenUrl(uri);
+  } else {
+    Stun.utils.popAlert('warning', '请输入字符');
+  }
+}
+
+var assistSearchList = window.CONFIG.assistSearch;
+
+if (Array.isArray(assistSearchList)) {
+  assistSearchList.forEach(function (name) {
+    document.querySelector('.search-btns-item--' + name).addEventListener('click', function () {
+      extSearch(name);
+    }, false);
+  });
+}</script><script src="https://cdn.jsdelivr.net/gh/sukkaw/busuanzi@latest/bsz.pure.mini.js" async></script><script src="/js/utils.js?v=2.6.2"></script><script src="/js/stun-boot.js?v=2.6.2"></script><script src="/js/scroll.js?v=2.6.2"></script><script src="/js/header.js?v=2.6.2"></script><script src="/js/sidebar.js?v=2.6.2"></script><script type="application/json" src="/search.json"></script></body></html>
